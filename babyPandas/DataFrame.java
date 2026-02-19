@@ -1,7 +1,20 @@
+import java.util.*;
 public class DataFrame {
     
+    private String [][] data;
+    private String [] columns;
     
     public DataFrame(String [][] data, String [] columns){
+        List<String[]> repaso = new ArrayList<>();
+        for(int i=0; i<data.length;i++){
+            if(data[i].length == columns.length){
+                repaso.add(data[i]);
+            }
+        }
+        String [][] newData = new String[repaso.size()][columns.length];
+        for(int i=0; i<repaso.size();i++) newData[i] = repaso.get(i); 
+        this.data = newData;
+        this.columns = columns;
     }
     
     public DataFrame loc(int [] rows, String columns){
@@ -18,7 +31,7 @@ public class DataFrame {
     }
 
     public int [] shape(){
-        return null;
+        return new int[] {data.length,columns.length};
     }    
     
    

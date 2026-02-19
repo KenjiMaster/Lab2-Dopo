@@ -26,8 +26,8 @@ public class DataFrameTest{
         String [] columns = {"Nombre", "Edad", "Profesión"};
         String [][] data={};
         int [] shape={0,3};
-        DataFrame df=new DataFrame(data,columns);
-        assertEquals(shape, df.shape());     
+        DataFrame df= new DataFrame(data,columns);
+        assertArrayEquals(shape,df.shape());     
     }    
    
     @Test
@@ -39,7 +39,7 @@ public class DataFrameTest{
         {"Elena", "25", "Diseñador"}};
         int [] shape={4,3};
         DataFrame df=new DataFrame(data,columns);
-        assertEquals(shape, df.shape());   
+        assertArrayEquals(shape, df.shape());   
     }    
     
     @Test
@@ -51,7 +51,7 @@ public class DataFrameTest{
         {"Elena", "25", "Diseñador"}};
         int [] shape={2,3};
         DataFrame df=new DataFrame(data,columns);
-        assertEquals(shape, df.shape());   
+        assertArrayEquals(shape, df.shape());   
     }      
     /**
      * Tears down the test fixture.
