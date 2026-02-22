@@ -10,20 +10,30 @@ public class BabyPandas{
     private HashMap<String,DataFrame> variables;
     
     public BabyPandas(){
+        variables = new HashMap<>();
     }
 
     //Definea new variable
     public void define(String name){
+        if(!variables.containsKey(name)){
+            variables.put(name,new DataFrame());
+        }
     }
      
     //Assign a DataFrame to an existing variable
     //a := DataFrame
-    public void assign(String a, String [] [] dataFrame){
+    public void assign(String variable, DataFrame df){
+        if(variables.containsKey(variable)){
+            variables.put(variable,df);
+        }
     }    
     
     //Return DataFrame's shape
-    public int[] shape(String a){
-        return null;
+    public int[] shape(String variable){
+        if(variables.containsKey(variable)){
+            return variables.get(variable).shape();
+        }
+        return new int[] {0,0};
     }
     
     
@@ -47,6 +57,11 @@ public class BabyPandas{
     
     //Return some rows of the DataFrame
     public String head(String variable, int rows){
+        if(variables.containsKey(variable)){
+            DataFrame df = variables.get(variable);
+            int minRows = Math.min(df.shape()[0],rows);
+            return df.head(minRows);
+        }
         return null;
     }
     
@@ -55,6 +70,7 @@ public class BabyPandas{
     public boolean ok(){
         return false;
     }
+
 }
     
 

@@ -4,6 +4,11 @@ public class DataFrame {
     private String [][] data;
     private String [] columns;
     
+    public DataFrame(){
+        data = new String[][] {};
+        columns = new String [] {};
+    }
+    
     public DataFrame(String [][] data, String [] columns){
         List<String[]> repaso = new ArrayList<>();
         for(int i=0; i<data.length;i++){
@@ -34,7 +39,6 @@ public class DataFrame {
         return new int[] {data.length,columns.length};
     }    
     
-   
     // The columns are aligned, separated by three spaces, and include the index.
     //     Nombre   Edad    Profesion
     // 0    Lucía     28    Ingeniero
@@ -43,7 +47,22 @@ public class DataFrame {
     // 3    Jorge     30   Arquitecto
     // 4    Elena     25    Diseñador
     public String head(int rows) {
-      return "";
+        StringBuilder sb = new StringBuilder();
+        String sep = "   ";
+        for(int i=0;i<columns.length;i++){
+            sb.append(sep);
+            sb.append(" ");
+            sb.append(columns[i]);
+        }
+        for(int i=0;i<columns.length;i++){
+            sb.append("\n");
+            sb.append(String.valueOf(i));
+            for(int j=0;j<data.length;j++){
+                sb.append(sep);
+                sb.append(data[i][j].substring(0,columns[i].length()));
+            }
+        }
+        return sb.toString();
     }
     
     public boolean equals(DataFrame df){
