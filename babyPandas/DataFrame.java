@@ -23,12 +23,60 @@ public class DataFrame {
     }
     
     public DataFrame loc(int [] rows, String columns){
-        return null;
+        List<String[]> selected = new ArrayList<>();
+        for (int idx : rows) {
+            if (idx >= 0 && idx < data.length) {
+                selected.add(data[idx].clone());
+            }
+        }
+        return new DataFrame(selected.toArray(new String[0][]), this.columns.clone());
     }    
     
     public DataFrame select(String [] values){
-        return null;
-    }      
+        // Resolve column indices in the requested order
+        List<Integer> colIdxs = new ArrayList<>();
+        List<String> newCols = new ArrayList<>();
+        for (String v : values) {
+            for (int j = 0; j < columns.length; j++) {
+                if (columns[j].equals(v)) {
+                    colIdxs.add(j);
+                    newCols.add(v);
+                    break;
+                }
+            }
+        }
+        String[] newColumns = newCols.toArray(new String[0]);
+        String[][] newData = new String[data.length][colIdxs.size()];
+        for (int i = 0; i < data.length; i++) {
+            for (int k = 0; k < colIdxs.size(); k++) {
+                newData[i][k] = data[i][colIdxs.get(k)];
+            }
+        }
+        return new DataFrame(newData, newColumns);
+    }  
+    
+        /**
+     * Returns a new DataFrame with rows that satisfy all non-null conditions.
+     * parameters has one entry per column (same order as columns array).
+     * null means "don't care"; any other value means the cell must equal it.
+     * All columns are always returned.
+     * @param parameters per-column filter values (null = any value accepted)
+     * @return new DataFrame with only the matching rows
+     */
+    public DataFrame filter(String[] parameters) {
+        List<String[]> selected = new ArrayList<>();
+        for (String[] row : data) {
+            boolean match = true;
+            for (int j = 0; j < parameters.length && j < columns.length; j++) {
+                if (parameters[j] != null && !parameters[j].equals(row[j])) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) selected.add(row.clone());
+        }
+        return new DataFrame(selected.toArray(new String[0][]), columns.clone());
+    }
 
 
     public DataFrame concat(DataFrame [] dfs, byte axis){
@@ -57,7 +105,7 @@ public class DataFrame {
         for(int i=0;i<columns.length;i++){
             sb.append("\n");
             sb.append(String.valueOf(i));
-            for(int j=0;j<data.length;j++){
+            for(int j=0;j<rows;j++){
                 sb.append(sep);
                 sb.append(data[i][j].substring(0,columns[i].length()));
             }
@@ -66,10 +114,16 @@ public class DataFrame {
     }
     
     public boolean equals(DataFrame df){
-        return false;
+        if (!Arrays.equals(this.columns, df.columns)) return false;
+        if (this.data.length != df.data.length) return false;
+        for (int i = 0; i < data.length; i++) {
+            if (!Arrays.equals(this.data[i], df.data[i])) return false;
+        }
+        return true;
     }
     
     public boolean equals(Object o){
-        return equals((DataFrame)o);
+        if (!(o instanceof DataFrame)) return false;
+        return equals((DataFrame) o);
     }
 }

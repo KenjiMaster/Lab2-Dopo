@@ -30,6 +30,48 @@ public class BabyPandasTest
         {"Elena", "25", "Diseñador"}};
         bp = new BabyPandas();
         df = new DataFrame(data,columns);
+        bp.define("p");
+        bp.assign("p", df);
+        bp.define("r");
+    }
+    
+    @Test
+    public void shouldAssignSelectedRowsToDestinationVariable() {
+        // Arrange
+        String[] params = {"1", "3"};
+
+        // Act
+        bp.assignUnary("r", "p", 'r', params);
+
+        // Assert — rows Luis and Carlos selected; all 3 columns preserved
+        assertEquals(2, bp.shape("r")[0]);
+        assertEquals(3, bp.shape("r")[1]);
+    }
+    
+    @Test
+    public void shouldAssignSelectedColumnsToDestinationVariable() {
+        // Arrange
+        String[] params = {"Nombre", "Edad"};
+
+        // Act
+        bp.assignUnary("r", "p", 'c', params);
+
+        // Assert — all 4 rows preserved, only 2 columns
+        assertEquals(4, bp.shape("r")[0]);
+        assertEquals(2, bp.shape("r")[1]);
+    }
+    
+    @Test
+    public void shouldAssignFilteredRowsToDestinationVariable() {
+        // Arrange — filter where Edad == "42"
+        String[] params = {null, "42", null};
+    
+        // Act
+        bp.assignUnary("r", "p", '?', params);
+    
+        // Assert — only Ana matches; all 3 columns preserved
+        assertEquals(1, bp.shape("r")[0]);
+        assertEquals(3, bp.shape("r")[1]);
     }
     
     @Test

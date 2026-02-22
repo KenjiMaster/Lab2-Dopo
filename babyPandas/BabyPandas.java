@@ -45,6 +45,28 @@ public class BabyPandas{
     //The parameters for '?' are [valueColumn1, valueColumn2, ...]
 
     public void assignUnary(String a, String b, char op, String [] parameters){
+        if (!variables.containsKey(a) || !variables.containsKey(b)) return;
+        DataFrame source = variables.get(b);
+        DataFrame result = null;
+
+        if (op == 'r') {
+            // Convert string indices to int[]
+            int[] rows = new int[parameters.length];
+            for (int i = 0; i < parameters.length; i++) {
+                rows[i] = Integer.parseInt(parameters[i]);
+            }
+            result = source.loc(rows, null); // second param ignored inside loc
+
+        } else if (op == 'c') {
+            result = source.select(parameters);
+
+        } else if (op == '?') {
+            result = source.filter(parameters);
+        }
+
+        if (result != null) {
+            variables.put(a, result);
+        }
     }
       
     
