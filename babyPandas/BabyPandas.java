@@ -1,65 +1,70 @@
 import java.util.HashMap;
 
-/** BabyPandas.java
- * 
+/**
+ * Interprete simplificado de Pandas que administra variables de tipo DataFrame.
  * @author ESCUELA 2026-01
  */
+public class BabyPandas {
     
-public class BabyPandas{
+    private HashMap<String, DataFrame> variables;
     
-    private HashMap<String,DataFrame> variables;
-    
-    public BabyPandas(){
+    /** Crea una instancia de BabyPandas sin variables definidas. */
+    public BabyPandas() {
         variables = new HashMap<>();
     }
 
-    //Definea new variable
-    public void define(String name){
-        if(!variables.containsKey(name)){
-            variables.put(name,new DataFrame());
+    /**
+     * Define una nueva variable vacía si el nombre no existe.
+     * @param name nombre de la variable
+     */
+    public void define(String name) {
+        if (!variables.containsKey(name)) {
+            variables.put(name, new DataFrame());
         }
     }
-     
-    //Assign a DataFrame to an existing variable
-    //a := DataFrame
-    public void assign(String variable, DataFrame df){
-        if(variables.containsKey(variable)){
-            variables.put(variable,df);
-        }
-    }    
     
-    //Return DataFrame's shape
-    public int[] shape(String variable){
-        if(variables.containsKey(variable)){
+    /**
+     * Asigna un DataFrame a una variable existente.
+     * @param variable nombre de la variable destino
+     * @param df       DataFrame a asignar
+     */
+    public void assign(String variable, DataFrame df) {
+        if (variables.containsKey(variable)) {
+            variables.put(variable, df);
+        }
+    }
+    
+    /**
+     * Retorna las dimensiones {filas, columnas} del DataFrame de la variable dada.
+     * @param variable nombre de la variable
+     */
+    public int[] shape(String variable) {
+        if (variables.containsKey(variable)) {
             return variables.get(variable).shape();
         }
-        return new int[] {0,0};
+        return new int[] {0, 0};
     }
     
-    
-    //Assigns the value of a unary operation to a variable
-    // a = b op parameters
-    //The operator characters are: 'r' select rows, 'c' select columns, '?' select condition
-    //The parameters for 'r' are [index1, index2, ...]
-    //The parameters for 'c' are [column1, column2, ...]
-    //The parameters for '?' are [valueColumn1, valueColumn2, ...]
-
-    public void assignUnary(String a, String b, char op, String [] parameters){
+    /**
+     * Asigna a 'a' el resultado de aplicar una operación unaria sobre 'b'; 'r' selecciona filas, 'c' columnas, '?' filtra por condición.
+     * @param a          variable destino
+     * @param b          variable fuente
+     * @param op         operador: 'r', 'c' o '?'
+     * @param parameters índices, nombres de columna o valores de condición según el operador
+     */
+    public void assignUnary(String a, String b, char op, String[] parameters) {
         if (!variables.containsKey(a) || !variables.containsKey(b)) return;
         DataFrame source = variables.get(b);
         DataFrame result = null;
 
         if (op == 'r') {
-            // Convert string indices to int[]
             int[] rows = new int[parameters.length];
             for (int i = 0; i < parameters.length; i++) {
                 rows[i] = Integer.parseInt(parameters[i]);
             }
-            result = source.loc(rows, null); // second param ignored inside loc
-
+            result = source.loc(rows, null);
         } else if (op == 'c') {
             result = source.select(parameters);
-
         } else if (op == '?') {
             result = source.filter(parameters);
         }
@@ -68,31 +73,43 @@ public class BabyPandas{
             variables.put(a, result);
         }
     }
-      
     
-    //Assigns the value of a binary operation to a variable
-    // a = b op c
-    //The operator characters are:  'r' concate by rows, 'c' concate by columns
-    public void assignBinary(String a, String b, char op, String c){
+    /**
+     * Asigna a 'a' la concatenación de 'b' y 'c'; 'r' une por filas, 'c' une por columnas.
+     * @param a  variable destino
+     * @param b  primera variable fuente
+     * @param op operador: 'r' o 'c'
+     * @param c  segunda variable fuente
+     */
+    public void assignBinary(String a, String b, char op, String c) {
+        if (!variables.containsKey(a) || !variables.containsKey(b) || !variables.containsKey(c)) return;
+        DataFrame dfB = variables.get(b);
+        DataFrame dfC = variables.get(c);
+        byte axis = (op == 'r') ? (byte) 0 : (byte) 1;
+        DataFrame result = dfB.concat(new DataFrame[]{dfC}, axis);
+        if (result != null) {
+            variables.put(a, result);
+        }
     }
-  
     
-    //Return some rows of the DataFrame
-    public String head(String variable, int rows){
-        if(variables.containsKey(variable)){
+    /**
+     * Retorna las primeras 'rows' filas del DataFrame de la variable dada, o null si no existe.
+     * @param variable nombre de la variable
+     * @param rows     número de filas a mostrar
+     */
+    public String head(String variable, int rows) {
+        if (variables.containsKey(variable)) {
             DataFrame df = variables.get(variable);
-            int minRows = Math.min(df.shape()[0],rows);
+            int minRows = Math.min(df.shape()[0], rows);
             return df.head(minRows);
         }
         return null;
     }
     
-    
-    //If the last operation was successfully completed
-    public boolean ok(){
+    /** Retorna true si la última operación se completó exitosamente. */
+    public boolean ok() {
         return false;
     }
-
 }
     
 

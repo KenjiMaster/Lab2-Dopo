@@ -3,10 +3,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
-
-
-
 public class DataFrameTest{
 
     
@@ -36,7 +32,6 @@ public class DataFrameTest{
     
     @Test
     public void shouldReturnSelectedRowsWithAllColumns() {
-        // Arrange
         int[] rows = {0, 2};
         String[][] expectedData = {
             {"Ana",   "Bogota", "25"},
@@ -44,16 +39,13 @@ public class DataFrameTest{
         };
         DataFrame expected = new DataFrame(expectedData, new String[]{"Nombre", "Ciudad", "Edad"});
 
-        // Act
         DataFrame result = personas.loc(rows, null);
 
-        // Assert
         assertEquals(expected, result);
     }
     
     @Test
     public void shouldReturnOnlyTheRequestedColumnsInOrder() {
-        // Arrange
         String[] cols = {"Ciudad", "Nombre"};
         String[][] expectedData = {
             {"Bogota",   "Ana"},
@@ -63,16 +55,13 @@ public class DataFrameTest{
         };
         DataFrame expected = new DataFrame(expectedData, new String[]{"Ciudad", "Nombre"});
 
-        // Act
         DataFrame result = personas.select(cols);
 
-        // Assert
         assertEquals(expected, result);
     }
     
     @Test
     public void shouldReturnRowsWhereConditionIsMetAndKeepAllColumns() {
-        // Arrange — null means "don't care" for that column position
         String[] params = {null, "Bogota", null};
         String[][] expectedData = {
             {"Ana",   "Bogota", "25"},
@@ -80,10 +69,8 @@ public class DataFrameTest{
         };
         DataFrame expected = new DataFrame(expectedData, new String[]{"Nombre", "Ciudad", "Edad"});
 
-        // Act
         DataFrame result = personas.filter(params);
 
-        // Assert
         assertEquals(expected, result);
     }
 
@@ -122,6 +109,28 @@ public class DataFrameTest{
     }
     
     
+    @Test
+    public void shouldConcatByRowsIncreasingRowCount() {
+        String[][] extraData = {{"Pedro", "Cali", "28"}};
+        DataFrame extra = new DataFrame(extraData, new String[]{"Nombre", "Ciudad", "Edad"});
+
+        DataFrame result = personas.concat(new DataFrame[]{extra}, (byte) 0);
+
+        assertEquals(5, result.shape()[0]);
+        assertEquals(3, result.shape()[1]);
+    }
+
+    @Test
+    public void shouldConcatByColumnsIncreasingColumnCount() {
+        String[][] extraData = {{"Colombia"}, {"Colombia"}, {"Colombia"}, {"Colombia"}};
+        DataFrame extra = new DataFrame(extraData, new String[]{"Pais"});
+
+        DataFrame result = personas.concat(new DataFrame[]{extra}, (byte) 1);
+
+        assertEquals(4, result.shape()[0]);
+        assertEquals(4, result.shape()[1]);
+    }
+
     /**
      * Tears down the test fixture.
      *

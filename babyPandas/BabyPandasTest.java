@@ -1,5 +1,3 @@
-
-
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,39 +35,30 @@ public class BabyPandasTest
     
     @Test
     public void shouldAssignSelectedRowsToDestinationVariable() {
-        // Arrange
         String[] params = {"1", "3"};
 
-        // Act
         bp.assignUnary("r", "p", 'r', params);
 
-        // Assert — rows Luis and Carlos selected; all 3 columns preserved
         assertEquals(2, bp.shape("r")[0]);
         assertEquals(3, bp.shape("r")[1]);
     }
     
     @Test
     public void shouldAssignSelectedColumnsToDestinationVariable() {
-        // Arrange
         String[] params = {"Nombre", "Edad"};
 
-        // Act
         bp.assignUnary("r", "p", 'c', params);
 
-        // Assert — all 4 rows preserved, only 2 columns
         assertEquals(4, bp.shape("r")[0]);
         assertEquals(2, bp.shape("r")[1]);
     }
     
     @Test
     public void shouldAssignFilteredRowsToDestinationVariable() {
-        // Arrange — filter where Edad == "42"
         String[] params = {null, "42", null};
     
-        // Act
         bp.assignUnary("r", "p", '?', params);
     
-        // Assert — only Ana matches; all 3 columns preserved
         assertEquals(1, bp.shape("r")[0]);
         assertEquals(3, bp.shape("r")[1]);
     }
@@ -94,6 +83,36 @@ public class BabyPandasTest
         assertNull(bp.head("uno",5)); 
     }
     
+    @Test
+    public void shouldConcatByRowsKeepingColumns() {
+        String[] cols = {"Nombre", "Edad", "Profesión"};
+        String[][] extraData = {{"Pedro", "28", "Abogado"}};
+        DataFrame extra = new DataFrame(extraData, cols);
+        bp.define("q");
+        bp.assign("q", extra);
+        bp.define("s");
+
+        bp.assignBinary("s", "p", 'r', "q");
+
+        assertEquals(5, bp.shape("s")[0]);
+        assertEquals(3, bp.shape("s")[1]);
+    }
+
+    @Test
+    public void shouldConcatByColumnsKeepingRows() {
+        String[] cols = {"Ciudad"};
+        String[][] extraData = {{"Bogota"}, {"Cali"}, {"Medellin"}, {"Barranquilla"}};
+        DataFrame extra = new DataFrame(extraData, cols);
+        bp.define("q");
+        bp.assign("q", extra);
+        bp.define("s");
+
+        bp.assignBinary("s", "p", 'c', "q");
+
+        assertEquals(4, bp.shape("s")[0]);
+        assertEquals(4, bp.shape("s")[1]);
+    }
+
     /**
      * Tears down the test fixture.
      *
